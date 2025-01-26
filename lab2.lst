@@ -1,0 +1,58 @@
+     1                                  ; Tuguldur Erdenebat
+     2                                  ; 1/23/2025
+     3                                  ; Lab 3 Cat
+     4                                  ; how to compile: make compile
+     5                                  ; Description: Basic version of cat. Reads from stdin, and copies into stdout
+     6                                  ; To submit: submit -c=SI459 -p=lab03 lab2.asm lab2.lst
+     7                                  
+     8                                  bits 64
+     9                                  
+    10                                  section .text
+    11                                      global _start
+    12                                  
+    13                                  ;;;;;;;;;;;;NOTES;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    14                                          ; function args 1:rdi, 2:rsi, 3:rcx, 4:rdx, 5:r8, 6:r9
+    15                                          ; frame pointer: rbp
+    16                                          ; function return value: rax
+    17                                  
+    18                                          ; sys_write(int fd, const void buf[.count], size_t count)
+    19                                          ; rax = 1
+    20                                  
+    21                                          ; sys_read(int fd, void buf[.count], size_t count)
+    22                                          ; rax = 0
+    23                                  
+    24                                          ;convention: syscall NR:rax, return:rax, arg0:rdi, arg1:rsi, arg2:rdx, arg3:r10  ...r8...r9
+    25                                  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    26                                  
+    27                                  _start:
+    28                                  
+    29                                      ;read in from stdin
+    30 00000000 B001                        mov al, 1 ; set syscall number to (sys_read + 1)
+    31 00000002 2C01                        sub al, 1 ; set syscall number to (sys_read)
+    32 00000004 40B701                      mov dil, 1 ; set file desctriptor to (stdin + 1)
+    33 00000007 4080EF01                    sub dil, 1  ;file descriptor set to 0 (stdin)
+    34 0000000B 4883C408                    add rsp, 8  ;increment the stack pointer by 1 byte
+    35 0000000F 4889E6                      mov rsi, rsp ;set buffer to stack pointer
+    36 00000012 B201                        mov dl, 1  ;just read one bit
+    37 00000014 0F05                        syscall
+    38                                  
+    39                                      ;check if eof or error was reached
+    40 00000016 4883C001                    add rax, 1  ;add 1 to rax
+    41 0000001A 4883F801                    cmp rax, 1  ;see if success (cmp rax+1, 1)
+    42 0000001E 740E                        je .done    ;if return value is zero(eof), then jump to done
+    43                                  
+    44                                      ;write to stdout
+    45 00000020 B001                        mov al, 1  ;set syscall number to sys_write
+    46 00000022 40B701                      mov dil, 1  ;file descriptor set to 1 (stdout)
+    47 00000025 4889E6                      mov rsi, rsp ;set buffer to stack pointer
+    48 00000028 B201                        mov dl, 1  ;just write one byte
+    49 0000002A 0F05                        syscall
+    50 0000002C EBD2                        jmp _start  ;loop back to the beginning
+    51                                  
+    52                                  .done:
+    53                                  
+    54                                      ;syscall for exit
+    55 0000002E 66B83C00                    mov ax, 60    ;syscall for sys_exit
+    56 00000032 40B701                      mov dil, 1  ;set status code to (success + 1)
+    57 00000035 4080EF01                    sub dil, 1  ;set status code 0 (success)
+    58 00000039 0F05                        syscall

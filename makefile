@@ -1,6 +1,6 @@
-compile: ecat.asm 
-	nasm -f elf64 ecat.asm
-	ld -o ecat -m elf_x86_64 ecat.o -z noexecstack
+compile: lab2.asm 
+	nasm -f elf64 lab2.asm -l lab2.lst
+	ld -o lab2 -m elf_x86_64 lab2.o -z noexecstack
 
 run:
-	@./ecat
+	@./lab2
