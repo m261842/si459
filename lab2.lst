@@ -52,7 +52,8 @@
     52                                  .done:
     53                                  
     54                                      ;syscall for exit
-    55 0000002E 66B83C00                    mov ax, 60    ;syscall for sys_exit
-    56 00000032 40B701                      mov dil, 1  ;set status code to (success + 1)
-    57 00000035 4080EF01                    sub dil, 1  ;set status code 0 (success)
-    58 00000039 0F05                        syscall
+    55 0000002E 4831C0                      xor rax, rax
+    56 00000031 B03C                        mov al, 60    ;syscall for sys_exit
+    57 00000033 40B701                      mov dil, 1  ;set status code to (success + 1)
+    58 00000036 4080EF01                    sub dil, 1  ;set status code 0 (success)
+    59 0000003A 0F05                        syscall

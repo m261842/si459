@@ -4,6 +4,7 @@
 ; how to compile: make compile
 ; Description: Basic version of cat. Reads from stdin, and copies into stdout
 ; To submit: submit -c=SI459 -p=lab03 lab2.asm lab2.lst
+; Collaborated (discussed) with Chris Paris
 
 bits 64
 
@@ -52,7 +53,8 @@ _start:
 .done:
 
     ;syscall for exit
-    mov ax, 60    ;syscall for sys_exit
+    xor rax, rax
+    mov al, 60    ;syscall for sys_exit
     mov dil, 1  ;set status code to (success + 1)
     sub dil, 1  ;set status code 0 (success)
     syscall
