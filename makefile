@@ -1,6 +1,6 @@
-compile: lab2.asm 
-	nasm -f elf64 lab2.asm -l lab2.lst
-	ld -o lab2 -m elf_x86_64 lab2.o -z noexecstack
+compile: copycat.asm 
+	nasm -f elf64 copycat.asm -l copycat.lst
+	ld -o copycat -m elf_x86_64 copycat.o -z noexecstack
 
 run:
-	@./lab2
+	@./copycat
