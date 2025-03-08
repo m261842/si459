@@ -1,12 +1,16 @@
 ; Tuguldur Erdenebat
-; 1/23/2025
-; Lab 3 Cat
+; 3/5/2025
+; Project 2 ShellCode
 ; how to compile: make compile
-; Description: Basic version of cat. Reads from stdin, and copies into stdout
-; To submit: submit -c=SI459 -p=lab03 lab2.asm lab2.lst
-; Collaborated (discussed) with Chris Paris
+; Description: Opens a file called win, and writes output to stdout
 
 bits 64
+
+;section .data
+;    ;define win file name and bin/sh
+;    win db './///win', 0x0
+;    bin db '//bin/sh', 0x0
+;    ;winFd db '', 0x0
 
 section .text
     global _start
@@ -27,11 +31,33 @@ section .text
 
 _start:
 
+;;;;;;;;;;;;;;;ORIGINAL COPYCAT STDIN;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ;read in from stdin
-    mov al, 1 ; set syscall number to (sys_read + 1)
-    sub al, 1 ; set syscall number to (sys_read)
-    mov dil, 1 ; set file desctriptor to (stdin + 1)
-    sub dil, 1  ;file descriptor set to 0 (stdin)
+    ;mov al, 1 ; set syscall number to (sys_read + 1)
+    ;sub al, 1 ; set syscall number to (sys_read)
+    ;mov dil, 1 ; set file desctriptor to (stdin + 1)
+    ;sub dil, 1  ;file descriptor set to 0 (stdin)
+    ;add rsp, 8  ;increment the stack pointer by 1 byte
+    ;mov rsi, rsp ;set buffer to stack pointer
+    ;mov dl, 1  ;just read one bit
+    ;syscall
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ;open win file
+    ;int fd = open('.////win', O_RDONLY, NULL)
+    ;int open(const char *pathname, int flags, /* mode_t mode */)
+    mov al, 2 ; set syscall number to (sys_open)
+    mov rdi, win ; set filename to win;
+    mov rsi, 0 ;set flag to O_RDONLY
+    mov dl, 0  ;set mode to null/0
+    syscall
+    mov r10, rax;move fd to variable
+
+_read:
+    
+    ;read in from the file
+    mov al, 0 ; set syscall number to (sys_read)
+    mov rdi, r10 ; set file desctriptor to (winFd)   ;dil to rdi
     add rsp, 8  ;increment the stack pointer by 1 byte
     mov rsi, rsp ;set buffer to stack pointer
     mov dl, 1  ;just read one bit
@@ -48,7 +74,7 @@ _start:
     mov rsi, rsp ;set buffer to stack pointer
     mov dl, 1  ;just write one byte
     syscall
-    jmp _start  ;loop back to the beginning
+    jmp _read  ;loop back to the beginning
 
 .done:
 
@@ -58,3 +84,6 @@ _start:
     mov dil, 1  ;set status code to (success + 1)
     sub dil, 1  ;set status code 0 (success)
     syscall
+    
+win:
+    db './///win', 0x0
